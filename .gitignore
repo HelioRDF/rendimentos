@@ -3,8 +3,6 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .idea/
-pom.xml
-src/
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
