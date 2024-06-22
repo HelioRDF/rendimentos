@@ -8,13 +8,16 @@ import java.math.RoundingMode;
 import java.util.List;
 
 public class ReadCSVFileCustom {
-    static int empresas = 1;
+    static int empresas = 0;
     static BigDecimal emprestimos = new BigDecimal(0);
     static BigDecimal mediaJuros = new BigDecimal(0);
     static BigDecimal somaParcelas = new BigDecimal(0);
     static BigDecimal recebido = new BigDecimal(0);
+    static BigDecimal lucroMes = new BigDecimal(0);
+    static BigDecimal lucroTotal = new BigDecimal(0);
     static BigDecimal credito = new BigDecimal(0);
     static BigDecimal deposito = new BigDecimal(45000);
+    static BigDecimal totalParcelas = new BigDecimal(24);
 
     public static void main(String[] args) {
         imprimir();
@@ -30,6 +33,7 @@ public class ReadCSVFileCustom {
             imprimirTabela(lines);
             imprimirEstatisticas();
             imprimirResumoFinal();
+            calcularLucro();
         } catch (IOException | CsvException e) {
             e.printStackTrace();
         }
@@ -40,12 +44,14 @@ public class ReadCSVFileCustom {
         System.out.println("| Valor      | Juros  | Mensal  | Pagas   | Parc | Total     | Crédito   |");
         System.out.println("+------------+--------+---------+---------+------+-----------+-----------+");
         for (String[] line : lines) {
+            empresas = lines.size();
             processarLinha(line);
         }
         System.out.println("+------------------------------------------------------------------------+\n");
     }
 
     private static void processarLinha(String[] line) {
+
         if (line.length >= 4) {
             BigDecimal valor = new BigDecimal(line[3].replaceAll("[^\\d,]", "").replace(",", ".")).setScale(0, BigDecimal.ROUND_DOWN);
             BigDecimal juros = new BigDecimal(line[5].replaceAll("[^\\d,]", "").replace(",", "."));
@@ -77,9 +83,31 @@ public class ReadCSVFileCustom {
     }
 
     private static void imprimirResumoFinal() {
+        lucroMes = credito.subtract(deposito).divide(totalParcelas, BigDecimal.ROUND_HALF_UP);
+        lucroTotal = credito.subtract(deposito);
         System.out.println("+----------+----------+--------------+-----------+-------------+---------+");
-        System.out.println("| Deposito | Lucro    | xxxxxxxxxx   | xxxxxxxx  | xxxxxxxx    | xxxxx   |");
-        System.out.printf("| %-8s | %-6s | %-12s | %-9s | %-10s  | %-8s|\n", "R$ "+deposito, "R$ "+credito.subtract(deposito), "R$ " , "R$ ", "R$ " , "R$ ");
+        System.out.println("| Deposito | Lucro    | Lucro mês    | xxxxxxxx  | xxxxxxxx    | xxxxx   |");
+        System.out.printf("| %-8s | %-6s | %-12s | %-9s | %-10s  | %-8s|\n", "R$ " + deposito, "R$ " + lucroTotal, "R$ " + lucroMes, "R$ ", "R$ ", "R$ ");
         System.out.println("+----------+----------+--------------+-----------+-------------+---------+");
+    }
+
+    public static void calcularLucro() {
+        int cont = 1;
+        int ParcAux = totalParcelas.intValue();
+        BigDecimal pagamentoAux = somaParcelas.setScale(0, BigDecimal.ROUND_DOWN);
+        BigDecimal rendimento = pagamentoAux.multiply(new BigDecimal(0.35)).setScale(0, BigDecimal.ROUND_DOWN);
+        BigDecimal somaRendimento = new BigDecimal(0);
+
+
+        System.out.println("\n+-----+-----------+------------+------------+-------------+--------------+");
+        System.out.println("| Mês | Pagamento | Lucro mês  | Rendimento | Soma        | Lucro Total  |");
+        System.out.println("+-----+-----------+------------+------------+-------------+--------------+");
+        while (cont <= ParcAux) {
+            somaRendimento = somaRendimento.add(rendimento);
+            lucroTotal = lucroTotal.add(somaRendimento);
+                    System.out.printf("| %-3s | %-9s | %-10s | %-10s | %-10s  | %-13s|\n", cont, "R$ " + pagamentoAux.multiply(new BigDecimal(cont)), "R$ " + lucroMes.multiply(new BigDecimal(cont)), "R$ " + rendimento, "R$ " + somaRendimento, "R$ "+lucroTotal);
+            cont++;
+        }
+        System.out.println("+-----+-----------+-------------+-----------+-------------+--------------+");
     }
 }

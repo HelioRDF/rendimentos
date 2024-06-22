@@ -10,7 +10,7 @@ import java.math.RoundingMode;
 import java.util.List;
 
 public class ReadCSVFile {
-    static int empresas = 1;
+    static int empresas = 0;
     static BigDecimal emprestimos = new BigDecimal(0);
     static BigDecimal mediaJuros = new BigDecimal(0);
     static BigDecimal somaParcelas = new BigDecimal(0);
