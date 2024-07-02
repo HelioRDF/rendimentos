@@ -4,6 +4,7 @@ import com.opencsv.exceptions.CsvException;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.List;
 
@@ -16,15 +17,17 @@ public class ReadCSVFileCustom {
     static BigDecimal lucroMes = new BigDecimal(0);
     static BigDecimal lucroTotal = new BigDecimal(0);
     static BigDecimal credito = new BigDecimal(0);
-    static BigDecimal deposito = new BigDecimal(45000);
+    static BigDecimal deposito = new BigDecimal(47000);
     static BigDecimal totalParcelas = new BigDecimal(24);
+    static BigDecimal somaDiferenca = new BigDecimal(24);
+
 
     public static void main(String[] args) {
         imprimir();
     }
 
     public static void imprimir() {
-        final String csvFile = "C:/Users/Gamer/Downloads/arquivo.csv";
+        final String csvFile = "C:/Users/Gamer/Downloads/dashboard.csv";
         try {
             List<String[]> lines = CSVProcessor.readCSV(csvFile);
             if (!lines.isEmpty()) {
@@ -41,7 +44,7 @@ public class ReadCSVFileCustom {
 
     private static void imprimirTabela(List<String[]> lines) {
         System.out.println("+------------+--------+---------+---------+------+-----------+-----------+");
-        System.out.println("| Valor      | Juros  | Mensal  | Pagas   | Parc | Total     | Crédito   |");
+        System.out.println("| Valor      | Juros  | Mensal  | Pagas   | Parc | Total     | Crédito   |  Lucro   | Nexoos   | Diferença   | Empresa   |");
         System.out.println("+------------+--------+---------+---------+------+-----------+-----------+");
         for (String[] line : lines) {
             empresas = lines.size();
@@ -55,9 +58,11 @@ public class ReadCSVFileCustom {
         if (line.length >= 4) {
             BigDecimal valor = new BigDecimal(line[3].replaceAll("[^\\d,]", "").replace(",", ".")).setScale(0, BigDecimal.ROUND_DOWN);
             BigDecimal juros = new BigDecimal(line[5].replaceAll("[^\\d,]", "").replace(",", "."));
+            String empresa = line[2];
             BigDecimal mensal = new BigDecimal(line[6]);
             String parcelas = line[7];
             BigDecimal pago = new BigDecimal(line[8]);
+
 
             String[] parcelasAux = parcelas.split("/");
             parcelas = parcelasAux[1];
@@ -68,10 +73,38 @@ public class ReadCSVFileCustom {
             recebido = recebido.add(pago);
             BigDecimal creditoAux = total.subtract(pago).setScale(0, BigDecimal.ROUND_DOWN);
             credito = credito.add(creditoAux);
-            System.out.printf("| %-10s | %-6s | %-7s | %-7s | %-5s| %-10s| %-10s|\n", valor, juros, mensal, pago, parcelas, total, creditoAux);
+            BigDecimal lucro = somarJurosMês(valor, juros, parcelas);
+            BigDecimal nexoos = total.subtract(valor);
+            BigDecimal diferenca = lucro.subtract(nexoos);
+            somaDiferenca = somaDiferenca.add(diferenca);
+            System.out.printf("| %-10s | %-6s | %-7s | %-7s | %-5s| %-10s| %-10s| %-10s| %-10s|%-10s|%-10s|\n", valor, juros, mensal, pago, parcelas, total, creditoAux, lucro, nexoos, diferenca,empresa );
+
         } else {
             System.out.println("A linha não possui todas as colunas (a, b, c).");
         }
+    }
+
+    private static BigDecimal somarJurosMês(BigDecimal valor, BigDecimal jurosAno, String parcelas) {
+        int parcelasAux = Integer.parseInt(parcelas);
+        int cont = 1;
+        BigDecimal valorAux = valor;
+        BigDecimal totalJurosMes = jurosAno.divide(new BigDecimal(12), 4, RoundingMode.HALF_UP);
+        BigDecimal parcelaEmprestimo = valorAux.divide(new BigDecimal(parcelasAux), 4, RoundingMode.HALF_UP);
+        BigDecimal valorJurosMes = new BigDecimal(0);
+        BigDecimal valorTotal = new BigDecimal(0);
+        BigDecimal somaValorTotal = new BigDecimal(0);
+
+        while (cont <= parcelasAux) {
+            valorJurosMes = valorAux.divide(new BigDecimal(100)).multiply(totalJurosMes);
+            valorTotal = parcelaEmprestimo.add(valorJurosMes);
+            somaValorTotal = somaValorTotal.add(valorTotal);
+            valorAux = valorAux.subtract(parcelaEmprestimo);
+            //    System.out.println(cont + " - " + valorAux + " - " + valorJurosMes + " - " + parcelaEmprestimo + " - " +parcelaEmprestimo.add(valorJurosMes)+ " - " + somaValorTotal);
+            cont++;
+        }
+        BigDecimal lucro = somaValorTotal.subtract(valor).setScale(2, BigDecimal.ROUND_DOWN);
+
+        return lucro;
     }
 
     private static void imprimirEstatisticas() {
@@ -97,6 +130,7 @@ public class ReadCSVFileCustom {
         BigDecimal pagamentoAux = somaParcelas.setScale(0, BigDecimal.ROUND_DOWN);
         BigDecimal rendimento = pagamentoAux.multiply(new BigDecimal(0.35)).setScale(0, BigDecimal.ROUND_DOWN);
         BigDecimal somaRendimento = new BigDecimal(0);
+        BigDecimal lucroTotalAux = new BigDecimal(0);
 
 
         System.out.println("\n+-----+-----------+------------+------------+-------------+--------------+");
@@ -104,10 +138,11 @@ public class ReadCSVFileCustom {
         System.out.println("+-----+-----------+------------+------------+-------------+--------------+");
         while (cont <= ParcAux) {
             somaRendimento = somaRendimento.add(rendimento);
-            lucroTotal = lucroTotal.add(somaRendimento);
-                    System.out.printf("| %-3s | %-9s | %-10s | %-10s | %-10s  | %-13s|\n", cont, "R$ " + pagamentoAux.multiply(new BigDecimal(cont)), "R$ " + lucroMes.multiply(new BigDecimal(cont)), "R$ " + rendimento, "R$ " + somaRendimento, "R$ "+lucroTotal);
+            lucroTotalAux = lucroTotal.add(somaRendimento);
+            System.out.printf("| %-3s | %-9s | %-10s | %-10s | %-10s  | %-13s|\n", cont, "R$ " + pagamentoAux.multiply(new BigDecimal(cont)), "R$ " + lucroMes.multiply(new BigDecimal(cont)), "R$ " + rendimento, "R$ " + somaRendimento, "R$ " + lucroTotalAux);
             cont++;
         }
         System.out.println("+-----+-----------+-------------+-----------+-------------+--------------+");
+        System.out.println("Crédito: " + lucroTotalAux.add(deposito) + " | Diferenca: " + somaDiferenca);
     }
 }
