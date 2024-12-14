@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Vídeo do YouTube com Timeout</title>
+</head>
+
+<body>
+    <a href="https://www.youtube.com/embed/v_yUn8TvEWs?mute=1&autoplay=1" id="meuBotao" target="_blank">Clique aqui</a>
+
+    <script>
+        function criarIframeYoutube(videoId, width, height, delay) {
+            // Adiciona o iframe ao corpo do documento após o delay especificado
+            setInterval(() => {
+                // Cria um novo elemento iframe
+                //const iframe = document.createElement('iframe');
+                const iframe = document.createElement('iframe');
+                // Define os atributos do iframe
+                iframe.width = width;
+                iframe.height = height;
+                iframe.src = `https://www.youtube.com/embed/${videoId}?mute=1&autoplay=1`;
+                iframe.frameborder = '0';
+                iframe.allowfullscreen = true;
+                document.body.appendChild(iframe);
+            }, delay);
+        }
+        function novaAba() {
+            // Selecionando o botão por ID
+            const meuBotao = document.getElementById('meuBotao');
+            // Selecionando o botão por classe
+            const botaoClasse = document.querySelector('.minhaClasse');
+
+            setInterval(() => {
+                meuBotao.click();
+            }, delay);
+        }
+        // Exemplo de uso:
+        const videoId = 'v_yUn8TvEWs'; // Substitua por seu ID de vídeo
+        const width = "auto";
+        const height = "auto";
+        const delay = 300000; // 10 segundos
+
+        //criarIframeYoutube(videoId, width, height, delay);
+        novaAba();
+
+        // Criar um botão para adicionar um novo iframe
+        const button = document.createElement('button');
+        // button.textContent = 'Adicionar Vídeo';
+        // document.body.appendChild(button);
+
+        //  button.addEventListener('click', () => {
+        //const videoId = prompt('Digite o ID do vídeo:');
+        //     criarIframeYoutube(videoId, 400, 300, 0); // Cria o iframe imediatamente
+        // });
+    </script>
+</body>
+
+</html>

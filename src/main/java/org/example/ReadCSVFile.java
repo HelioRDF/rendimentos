@@ -16,14 +16,14 @@ public class ReadCSVFile {
     static BigDecimal somaParcelas = new BigDecimal(0);
     static BigDecimal recebido = new BigDecimal(0);
     static BigDecimal credito = new BigDecimal(0);
-    static BigDecimal deposito = new BigDecimal(45000);
+    static BigDecimal deposito = new BigDecimal(56500);
 
     public static void main(String[] args) {
         imprimir();
     }
 
     public static void imprimir() {
-        final String csvFile = "C:/Users/Gamer/Downloads/arquivo.csv";
+        final String csvFile = "C:/Users/franca/Downloads/arquivo.csv";
         try (CSVReader reader = new CSVReader(new FileReader(csvFile))) {
             // Lê todas as linhas do arquivo CSV
             List<String[]> lines = reader.readAll();

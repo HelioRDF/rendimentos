@@ -6,9 +6,9 @@ public class Simular2 {
     public static DecimalFormat df = new DecimalFormat("#,###");
     public static DecimalFormat dfp = new DecimalFormat("##.##");
     //2024=56000 | 2026=165000 | 2028=297292 | *2030=536750 | 2032=969500 | 2034=1752208
-    public static double deposito = 60500;
-    public static double juros = 35;
-    public static double meses = 24;
+    public static double deposito = 106000;
+    public static double juros = 30;
+    public static double meses = 26;
     public static double lucro = 0;
     public static double Recebivel = 0;
     public static double adicional =0;
