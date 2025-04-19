@@ -17,7 +17,7 @@ public class ReadCSVFileCustom {
     static BigDecimal lucroMes = new BigDecimal(0);
     static BigDecimal lucroTotal = new BigDecimal(0);
     static BigDecimal credito = new BigDecimal(0);
-    static BigDecimal deposito = new BigDecimal(70000);
+    static BigDecimal deposito = new BigDecimal(72500);
     static BigDecimal totalParcelas = new BigDecimal(24);
     static BigDecimal somaDiferenca = new BigDecimal(24);
 
@@ -27,6 +27,7 @@ public class ReadCSVFileCustom {
     }
 
     public static void imprimir() {
+       // final String csvFile = "C:/Users/franca/Downloads/dashboard.csv";
         final String csvFile = "C:/Users/franca/Downloads/dashboard.csv";
         try {
             List<String[]> lines = CSVProcessor.readCSV(csvFile);
